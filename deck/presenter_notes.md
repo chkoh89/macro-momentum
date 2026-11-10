@@ -5,6 +5,46 @@ backtest run of 2026-11-10 (Nov 2016 to Oct 2026). Slide numbers refer to the
 30-slide PowerPoint / Google Slides version, which counts section dividers;
 the PDF numbers its slides differently.
 
+## What the paper says
+
+Brooks, *A Half Century of Macro Momentum* (AQR, 2017).
+
+- **The idea.** Markets are slow to react to changes in the economy. So if a
+  country's economic picture has improved over the past year, its markets tend
+  to keep doing well for a while, and vice versa. Macro momentum buys the
+  improvers and sells the deteriorators.
+- **Four themes**, each measured as a change over one year:
+    - business cycle: GDP growth and inflation
+    - international trade: the currency against trading partners
+    - monetary policy: interest rates
+    - risk sentiment: the stock market's own return
+- **A rule book (Exhibit 1)** turns each theme into buy or sell positions in
+  stocks, government bonds, currencies and short-term interest-rate futures.
+  For example, rising inflation means sell bonds and stocks, buy the currency.
+- **Results, 1970 to 2016:** Sharpe ratio 1.2 for macro momentum, about 13% a
+  year above cash. It was:
+    - better than trend following (1.1)
+    - best when combined with trend following, 50/50 (1.4)
+    - only loosely correlated with stocks (-0.22) and trend following (0.4)
+    - profitable on average in the ten worst quarters for stocks
+- **Its own warning signs:** the last stretch, 2010 to 2016, was the weakest
+  (Sharpe 0.7), and the results are a backtest before costs and fees.
+
+## What the presentation covers
+
+It asks one question: **did macro momentum keep working after the paper was
+published?** We rebuilt a simpler version with free public data and ran it on
+the ten years the author never saw.
+
+| Slides | Section | What it does |
+|---|---|---|
+| 1 to 3 | Opening | The question, and the answer up front |
+| 4 to 9 | The basics | The three kinds of market, long and short, risk and the Sharpe ratio, the four economic numbers, what a backtest is |
+| 10 to 16 | The strategy | The idea, the four themes, the rule book, how the pieces combine, no peeking at the future, how our data differ from the paper's |
+| 17 to 23 | Results | Scorecard, growth of $100, the two halves, which parts worked, trading costs, trading late |
+| 24 to 26 | Versus trend following | How closely the two move together, and trend following's bad decade |
+| 27 to 30 | Wrap-up | Takeaways and limits, glossary, sources |
+
 ## The story in three sentences
 
 1. A strategy published in 2017 still worked over the next ten years, at about
