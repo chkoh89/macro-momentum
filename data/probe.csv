@@ -1,0 +1,106 @@
+source,symbol,ok,first,last,n,last_value,error
+yahoo,^GSPC,True,2008-01-02,2026-11-09,4744,7549.9399,
+yahoo,^GDAXI,True,2008-01-02,2026-11-09,4786,26267.1895,
+yahoo,^STOXX50E,True,2008-01-03,2026-11-09,4729,6290.4502,
+yahoo,^N225,True,2008-01-04,2026-11-10,4607,60446.5781,
+yahoo,^FTSE,True,2008-01-02,2026-11-09,4763,10782.9004,
+yahoo,^GSPTSE,True,2008-01-02,2026-11-09,4732,36446.2617,
+yahoo,^AXJO,True,2008-01-02,2026-11-10,4764,9130.9004,
+yahoo,^SSMI,True,2008-01-03,2026-11-09,4730,14946.1504,
+yahoo,^OMX,True,2008-11-20,2026-11-09,4507,3309.8501,
+yahoo,^NZ50,True,2008-01-03,2026-11-10,4649,14119.1104,
+yahoo,^OSEAX,False,,,0,,empty
+yahoo,OBX.OL,True,2026-11-09,2026-11-09,1,1991.97,
+yahoo,OSEBX.OL,True,2013-03-05,2026-11-09,3412,2079.52,
+yahoo,ES=F,True,2008-01-02,2026-11-09,4745,7584.25,
+yahoo,NIY=F,True,2008-01-02,2026-11-09,4737,60535.0,
+yahoo,NKD=F,True,2008-01-02,2026-11-09,4744,60560.0,
+yahoo,ZN=F,True,2008-01-02,2026-11-09,4736,107.0,
+yahoo,ZB=F,True,2008-01-02,2026-11-09,4743,108.375,
+yahoo,ZF=F,True,2008-01-02,2026-11-09,4745,105.1328,
+yahoo,ZT=F,True,2008-01-02,2026-11-09,4745,102.3359,
+yahoo,SPY,True,2008-01-02,2026-11-09,4744,752.69,
+yahoo,EWG,True,2008-01-02,2026-11-09,4744,42.99,
+yahoo,EWJ,True,2008-01-02,2026-11-09,4744,91.48,
+yahoo,EWU,True,2008-01-02,2026-11-09,4744,48.32,
+yahoo,EWC,True,2008-01-02,2026-11-09,4744,60.98,
+yahoo,EWA,True,2008-01-02,2026-11-09,4744,29.67,
+yahoo,EWL,True,2008-01-02,2026-11-09,4744,65.73,
+yahoo,EWD,True,2008-01-02,2026-11-09,4744,53.54,
+yahoo,ENZL,True,2010-09-02,2026-11-09,4071,46.02,
+yahoo,NORW,True,2009-08-19,2026-11-09,4333,36.64,
+yahoo,ENOR,True,2012-01-24,2026-11-09,3721,36.2,
+yahoo,EZU,True,2008-01-02,2026-11-09,4744,67.82,
+yahoo,IEF,True,2008-01-02,2026-11-09,4744,91.8,
+yahoo,TLT,True,2008-01-02,2026-11-09,4744,81.96,
+yahoo,GOVT,True,2012-02-24,2026-11-09,3699,22.3,
+yahoo,BWX,True,2008-01-02,2026-11-09,4744,21.57,
+yahoo,IGOV,True,2009-01-30,2026-11-09,4472,40.69,
+yahoo,SHY,True,2008-01-02,2026-11-09,4744,81.59,
+yahoo,BIL,True,2008-01-02,2026-11-09,4744,91.48,
+yahoo,EXHD.DE,True,2008-01-02,2026-11-06,4787,114.695,
+yahoo,EXX6.DE,True,2008-01-02,2026-11-06,4787,112.29,
+yahoo,EXHB.DE,True,2008-01-02,2026-11-06,4787,80.014,
+yahoo,X03G.DE,True,2011-08-24,2026-11-06,3858,174.94,
+yahoo,IS0L.DE,True,2012-05-08,2026-11-06,3678,116.92,
+yahoo,IBGM.L,True,2008-01-02,2026-11-06,4762,149.985,
+yahoo,IBGM.AS,True,2008-01-02,2026-11-06,4823,179.8,
+yahoo,SEGA.L,True,2009-04-17,2026-11-06,4436,88.59,
+yahoo,EUN8.DE,True,2009-10-21,2026-11-09,3872,140.395,
+yahoo,EXVM.DE,True,2008-07-29,2026-11-06,4642,77.0185,
+yahoo,IGLT.L,True,2008-01-02,2026-11-06,4763,9.7175,
+yahoo,VGOV.L,True,2012-05-22,2026-11-06,3654,15.45,
+yahoo,2510.T,True,2017-12-06,2026-11-10,2191,810.8,
+yahoo,2561.T,True,2020-02-21,2026-11-10,1639,2012.0,
+yahoo,XGB.TO,True,2008-01-02,2026-11-09,4732,19.015,
+yahoo,ZFM.TO,True,2010-04-20,2026-11-09,4153,14.63,
+yahoo,VGB.AX,True,2012-04-24,2026-11-10,3683,46.07,
+yahoo,IGB.AX,True,2012-03-13,2026-11-10,3714,97.27,
+yahoo,RGB.AX,True,2012-03-13,2026-11-10,3691,18.85,
+yahoo,CSBGC0.SW,True,2008-01-03,2026-11-06,4736,103.655,
+yahoo,CSBGC7.SW,True,2008-01-03,2026-11-06,4740,73.41,
+yahoo,NGB.NZ,True,2020-07-14,2026-11-10,1584,2.237,
+yahoo,EURUSD=X,True,2008-01-01,2026-11-10,4892,1.1221,
+yahoo,JPY=X,True,2008-01-01,2026-11-10,4892,158.098,
+yahoo,GBPUSD=X,True,2008-01-01,2026-11-10,4905,1.344,
+yahoo,CAD=X,True,2008-01-01,2026-11-10,4907,1.4123,
+yahoo,AUDUSD=X,True,2008-01-01,2026-11-10,4907,0.6921,
+yahoo,CHF=X,True,2008-01-01,2026-11-10,4905,0.8201,
+yahoo,SEK=X,True,2008-01-01,2026-11-10,4891,9.7994,
+yahoo,NZDUSD=X,True,2008-01-01,2026-11-10,4908,0.5632,
+yahoo,NOK=X,True,2008-01-01,2026-11-10,4891,9.3996,
+yahoo,^TNX,True,2008-01-02,2026-11-09,4742,4.864,
+yahoo,^IRX,True,2008-01-02,2026-11-09,4742,4.035,
+yahoo,^FVX,True,2008-01-02,2026-11-09,4742,4.659,
+stooq,^spx,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^dax,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^nkx,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^ukx,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^tsx,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^aor,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^smi,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^omxs,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^nz50,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,^oseax,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10yusy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10ydey.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10yjpy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10yuky.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10ycay.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10yauy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10ychy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10ysey.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10ynzy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,10ynoy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2yusy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2ydey.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2yjpy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2yuky.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2ycay.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2yauy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2ychy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2ysey.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2ynzy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,2ynoy.b,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,eurusd,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
+stooq,usdjpy,False,,,0,,"200 '<!DOCTYPE html><html><head><meta charset=""utf-8""><meta name=""robots"" content=""noindex,nofo'"
