@@ -40,7 +40,7 @@ def add(asset, c, ticker, name, x, ref, ref_name, limit):
                  "worst_month": f"{xs.min():.1%}", "best_month": f"{xs.max():.1%}",
                  "check_vs": ref_name, "corr": round(d["x"].corr(d["ref"]), 2) if len(d) > 24 else np.nan,
                  "ann_gap": f"{(d['x'] - d['ref']).mean() * 12:+.1%}" if len(d) > 24 else "",
-                 "flag": "CHECK" if xs.abs().max() > limit else ""})
+                 "flag": "CHECK" if xs.loc["2012-01":].abs().max() > limit else ""})
 
 
 for c, (t, name, _, _) in EQUITY.items():
@@ -54,7 +54,7 @@ qa = pd.DataFrame(rows)
 out = pathlib.Path("results")
 out.mkdir(exist_ok=True)
 md = ["# Data check: traded series", "",
-      "Raw (not excess) monthly returns. `ann_ret`, `ann_vol` from Nov 2016; `corr` and `ann_gap` "
+      "Raw (not excess) monthly returns. `ann_ret`, `ann_vol` from Nov 2016; `flag` looks at 2012 on; `corr` and `ann_gap` "
       "(series minus check, per year) from 2014. Equity gaps are mostly dividends for price indices; "
       "bond correlations are held down by the check using monthly-average yields.", "",
       qa.to_markdown(index=False), ""]

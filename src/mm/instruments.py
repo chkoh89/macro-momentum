@@ -44,4 +44,4 @@ FX = {
 
 # US-listed country ETFs (USD, total return): used only to cross-check the indices.
 EQ_REF = {"US": "SPY", "DE": "EWG", "JP": "EWJ", "GB": "EWU", "CA": "EWC",
-          "AU": "EWA", "CH": "EWL", "SE": "EWD", "NZ": "ENZL", "NO": "NORW"}
+          "AU": "EWA", "CH": "EWL", "SE": "EWD", "NZ": "ENZL", "NO": "ENOR"}
