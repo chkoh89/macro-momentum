@@ -22,7 +22,7 @@ Paper: https://www.aqr.com/-/media/AQR/Documents/Insights/White-Papers/A-Half-Ce
 | 1 | Slide deck (LaTeX beamer, metropolis, compiled to PDF, with data sources and diagrams) | `deck/` | not started |
 | 2 | Backtest | `src/mm/`, `scripts/`, `results/` | v1 running on real data: FRED signals, tradeable instruments |
 
-## Result so far (run of 2026-11-09, Nov 2016 to Oct 2026, gross of costs)
+## Result so far (run of 2026-11-10, Nov 2016 to Oct 2026, gross unless marked net)
 
 `results/summary.md` is the source of truth and is refreshed by the weekly
 GitHub Action; the table below is a snapshot.
@@ -32,6 +32,7 @@ GitHub Action; the table below is a snapshot.
 | Macro momentum | 7.3% | 0.69 | 2.2 | -15.4% |
 | Trend following (1/3/12-month) | -0.6% | -0.05 | -0.2 | -22.8% |
 | 50/50 | 3.4% | 0.39 | 1.2 | -9.5% |
+| Macro momentum, net of costs | 6.0% | 0.57 | 1.8 | -16.5% |
 
 - **It held up, at about half the paper's Sharpe** (1.2 for 1970 to 2016, 0.7 for 2010 to 2016).
 - **Two different halves.** Sharpe 0.25 to Dec 2021, 1.19 from Jan 2022. Three
@@ -44,7 +45,11 @@ GitHub Action; the table below is a snapshot.
   Trend following on these 26 markets made nothing over the decade.
 - **Fragile to delay.** Waiting one extra month keeps the Sharpe at 0.65; two
   months cuts it to 0.21.
-- **Not yet credible as a live number**: gross of costs, ten years, latest-vintage
+- **Costs take a fifth of it.** Macro momentum trades about 40x NAV a year (bonds
+  22x, FX 11x, equities 8x), twice as much as trend following. At the assumed
+  costs that is a 1.3% a year drag and a net Sharpe of 0.57; at twice the costs,
+  0.44; at four times, 0.20.
+- **Not yet credible as a live number**: ten years, latest-vintage
   GDP data, and the inflation signal is stale for five countries after
   early 2025 (see Known gaps).
 
@@ -55,7 +60,7 @@ pip install -r requirements.txt
 PYTHONPATH=src python -m mm.fetch          # FRED macro series for the signals, no API key
 PYTHONPATH=src python -m mm.fetch_market   # tradeable series from Yahoo Finance
 python scripts/data_qa.py                  # cross-check every traded series -> results/data_qa.md
-python scripts/run_backtest.py             # -> results/summary.md, stats.csv, returns.csv, sensitivity.csv
+python scripts/run_backtest.py             # -> results/summary.md, stats.csv, returns.csv, sensitivity.csv, costs.csv
 python -m pytest -q
 ```
 
@@ -118,7 +123,7 @@ Month-end closes, daily data from Yahoo Finance (`src/mm/instruments.py`).
 | Asset classes | equities, FX, bonds, short-rate futures | no short-rate futures | the paper's best asset class (Sharpe 0.8) is missing |
 | Instruments | futures and forwards | cash indices, bond ETFs, spot plus carry | close to futures returns; ETF durations differ by country (handled by vol scaling) |
 | Bond markets | 10+ | 6, plus Japan from 2020 | thinner cross-section |
-| Costs | gross | gross | add turnover-based costs before quoting numbers |
+| Costs | gross | gross and net of assumed costs (eq 4bp, bond 3bp, fx 3bp one-way) | net Sharpe is about 0.12 lower; costs are assumed, not measured |
 
 ## Known gaps
 
@@ -126,7 +131,11 @@ Month-end closes, daily data from Yahoo Finance (`src/mm/instruments.py`).
   FRED's OECD feed stopped. The inflation signal runs on the other five
   countries after that. Fix: pull CPI from the OECD API or national sources.
 - **GDP is latest-vintage**, so the growth signal sees revisions. Fix: ALFRED vintages.
-- **No transaction costs.**
+- **Costs are an assumption.** One-way 4bp (equities), 3bp (bonds, FX) per unit
+  of notional, in `backtest.COST_BPS`: roughly the half-spread plus impact of
+  liquid developed-market futures and FX forwards. They ignore futures roll
+  costs, and trading the cash ETFs used here as proxies would cost more. The
+  table shows 0x to 4x so the reader can pick their own number.
 - **Japan bonds** enter only in 2020 (ETF listed Dec 2017, then two years of
   volatility history).
 - **v0 for reference**: `--source fred` reruns the first version on non-tradeable
@@ -143,7 +152,7 @@ src/mm/fetch_market.py  Yahoo download -> data/market.csv
 src/mm/data.py          panel loader, excess returns per asset class
 src/mm/signals.py       macro trends, publication lags, Exhibit 1 sign map
 src/mm/portfolio.py     long-short and directional weights, vol targeting
-src/mm/backtest.py      macro momentum, trend following, statistics
+src/mm/backtest.py      macro momentum, trend following, positions, turnover, costs, statistics
 src/mm/synth.py         random panel for tests
 scripts/run_backtest.py, scripts/data_qa.py, scripts/dispatch.sh
 tests/                  pytest (includes a look-ahead test)
@@ -158,7 +167,10 @@ deck/                   beamer deck (to build)
 - [x] Trade real instruments; cross-check each against an independent series.
 - [x] First robustness table: implementation lag 0/1/2, tradeable vs v0 returns.
 - [ ] Fresh CPI for JP, GB, CA, AU, NZ (OECD API).
-- [ ] Turnover and a cost assumption per asset class.
+- [x] Turnover and a cost assumption per asset class (positions tracked through
+      every vol-scaling layer; net Sharpe at 0x/1x/2x/4x costs).
+- [ ] Why is bond turnover 22x a year? Split turnover into signal changes and
+      vol-target rescaling; test smoothing or a no-trade band (as robustness).
 - [ ] More robustness: 6- and 18-month lookbacks, drop one country at a time,
       2y yields for the policy signal, bootstrap confidence interval on the Sharpe.
 - [ ] Episodes: 2018 Q4, Mar-2020, 2022 rate shock, 2026 energy shock. Did macro

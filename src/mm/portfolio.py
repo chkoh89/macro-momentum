@@ -36,7 +36,13 @@ def pnl(w: pd.DataFrame, r: pd.DataFrame) -> pd.Series:
     return (w.shift(1) * r[w.columns]).sum(axis=1, min_count=1)
 
 
+def vol_scale(x: pd.Series, target=TARGET) -> pd.Series:
+    """Leverage applied to month t's return: target over the stream's own
+    trailing volatility, known at the end of t-1."""
+    return (target / ann_vol(x)).shift(1)
+
+
 def target_vol(x: pd.Series, target=TARGET) -> pd.Series:
     """Scale a return stream to the volatility target using its own trailing
     volatility, lagged one month."""
-    return x * (target / ann_vol(x)).shift(1)
+    return x * vol_scale(x, target)
