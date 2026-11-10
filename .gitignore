@@ -8,3 +8,16 @@ data/raw/
 *.out
 *.snm
 *.toc
+
+# LaTeX build files
+deck/*.aux
+deck/*.log
+deck/*.nav
+deck/*.out
+deck/*.snm
+deck/*.toc
+deck/*.vrb
+deck/*.fls
+deck/*.fdb_latexmk
+deck/*.xdv
+deck/*.synctex.gz

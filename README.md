@@ -19,7 +19,7 @@ Paper: https://www.aqr.com/-/media/AQR/Documents/Insights/White-Papers/A-Half-Ce
 
 | # | Deliverable | Where | Status |
 |---|---|---|---|
-| 1 | Slide deck (LaTeX beamer, metropolis, compiled to PDF, with data sources and diagrams) | `deck/` | not started |
+| 1 | Slide deck (LaTeX beamer, metropolis, compiled to PDF, with data sources and diagrams), written for a reader with basic finance | `deck/macro_momentum.pdf` | v1 |
 | 2 | Backtest | `src/mm/`, `scripts/`, `results/` | v1 running on real data: FRED signals, tradeable instruments |
 
 ## Result so far (run of 2026-11-10, Nov 2016 to Oct 2026, gross unless marked net)
@@ -62,6 +62,7 @@ PYTHONPATH=src python -m mm.fetch_market   # tradeable series from Yahoo Finance
 python scripts/data_qa.py                  # cross-check every traded series -> results/data_qa.md
 python scripts/run_backtest.py             # -> results/summary.md, stats.csv, returns.csv, sensitivity.csv, costs.csv
 python -m pytest -q
+python scripts/make_deck_assets.py         # deck figures and numbers, then: cd deck && latexmk -xelatex macro_momentum.tex
 ```
 
 Or run the `data-and-backtest` Action (Actions tab, "Run workflow"): it does
@@ -155,10 +156,11 @@ src/mm/portfolio.py     long-short and directional weights, vol targeting
 src/mm/backtest.py      macro momentum, trend following, positions, turnover, costs, statistics
 src/mm/synth.py         random panel for tests
 scripts/run_backtest.py, scripts/data_qa.py, scripts/dispatch.sh
+scripts/make_deck_assets.py  deck figures, tables and number macros from the backtest
 tests/                  pytest (includes a look-ahead test)
 docs/paper_summary.md   what the paper does and finds
 docs/data.md            data map
-deck/                   beamer deck (to build)
+deck/                   beamer deck, see deck/README.md
 ```
 
 ## Roadmap
@@ -175,10 +177,9 @@ deck/                   beamer deck (to build)
       2y yields for the policy signal, bootstrap confidence interval on the Sharpe.
 - [ ] Episodes: 2018 Q4, Mar-2020, 2022 rate shock, 2026 energy shock. Did macro
       momentum help when bonds and equities fell together?
-- [ ] Figures for the deck: cumulative returns, theme and asset-class bars,
+- [x] Figures for the deck: cumulative returns, theme and asset-class bars,
       rolling correlation with trend following, Exhibit 1 as a diagram.
-- [ ] Deck: reuse the `deck_macro101_2026-10-27.tex` template (metropolis, 16:9,
-      `\src{}` footers, TikZ diagrams). Sections: themes and transmission,
-      construction, data and instruments, results, vs trend, caveats, sources.
+- [x] Deck (`deck/`): themes, construction, data, results, vs trend, caveats,
+      sources, glossary. Pitched at a college freshman.
 
 See `AGENTS.md` before contributing.
