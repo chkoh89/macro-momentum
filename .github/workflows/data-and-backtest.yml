@@ -1,0 +1,26 @@
+name: data-and-backtest
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"   # Mondays 06:17 UTC
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: PYTHONPATH=src python -m mm.fetch
+      - run: python scripts/run_backtest.py
+      - name: Commit data and results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/panel.csv data/coverage.csv results
+          git diff --cached --quiet || git commit -m "Refresh data and backtest results"
+          git push
