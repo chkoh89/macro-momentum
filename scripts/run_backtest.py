@@ -11,7 +11,7 @@ import sys
 import pandas as pd
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
-from mm.backtest import macro_momentum, stats, trend_following  # noqa: E402
+from mm.backtest import COST_BPS, blend, costs, macro_momentum, stats, trend_following, turnover  # noqa: E402
 from mm.data import load_panel  # noqa: E402
 from mm.signals import macro_trends  # noqa: E402
 
@@ -28,7 +28,28 @@ def streams(panel, impl_lag, source, months):
     s |= {f"MM style: {k}": mm["sleeves"].xs(k, axis=1, level="style").mean(axis=1) for k in ("xs", "ts")}
     s |= {f"TF asset: {k}": v for k, v in tf["by_asset"].items()}
     df = pd.DataFrame(s).dropna(subset=MAIN).tail(months)
-    return df, mm
+    pos = {"Macro momentum": mm["positions"], "Trend following": tf["positions"],
+           "50/50": blend(mm, tf)["positions"]}
+    return df, mm, pos
+
+
+COST_MULTS = (0, 1, 2, 4)
+
+
+def cost_table(df, pos):
+    """Turnover, cost drag and net Sharpe for each main strategy over df's window."""
+    rows = []
+    for m in MAIN:
+        t = turnover(pos[m]).reindex(df.index)
+        row = {"strategy": m, **{f"turnover {a}": t[a].mean() * 12 for a in t},
+               "turnover total": t.sum(axis=1).mean() * 12}
+        for k in COST_MULTS:
+            c = costs(pos[m], mult=k).reindex(df.index)
+            if k == 1:
+                row["drag 1x"] = c.mean() * 12
+            row[f"sharpe {k}x"] = stats(df[m] - c).get("sharpe", float("nan"))
+        rows.append(row)
+    return pd.DataFrame(rows).set_index("strategy")
 
 
 def main():
@@ -49,9 +70,12 @@ def main():
         panel, tag = load_panel(a.panel, a.market), "real data"
     source = a.source or ("market" if "px_eq" in panel else "fred")
     lag = a.impl_lag if a.impl_lag is not None else (0 if source == "market" else 1)
-    df, mm = streams(panel, lag, source, a.months)
+    df, mm, pos = streams(panel, lag, source, a.months)
+    ct = cost_table(df, pos)
+    net = {m: df[m] - costs(pos[m]).reindex(df.index) for m in MAIN}
 
-    table = pd.DataFrame({k: stats(df[k]) for k in df}).T
+    table = pd.DataFrame({k: stats(df[k]) for k in df}
+                         | {f"{m} (net, 1x costs)": stats(net[m]) for m in MAIN}).T
     us = pd.DataFrame({"US equities": mm["asset_returns"]["eq"]["US"],
                        "US bonds": mm["asset_returns"]["bond"]["US"]}).reindex(df.index)
     corr = pd.concat([df[MAIN[:2]], us], axis=1).corr()
@@ -64,10 +88,12 @@ def main():
     sens = []
     for src in (["market", "fred"] if "px_eq" in panel and "eq" in panel else [source]):
         for lg in (0, 1, 2):
-            d, _ = streams(panel, lg, src, a.months)
+            d, _, ps = streams(panel, lg, src, a.months)
             note = "look-ahead: averaged prices" if (src == "fred" and lg == 0) else ""
             sens.append({"returns": src, "impl_lag": lg, "months": len(d),
                          **{m: round(stats(d[m]).get("sharpe", float("nan")), 2) for m in MAIN},
+                         **{f"{m} net": round(stats(d[m] - costs(ps[m]).reindex(d.index)).get("sharpe", float("nan")), 2)
+                            for m in MAIN[:2]},
                          "corr MM/TF": round(d[MAIN[0]].corr(d[MAIN[1]]), 2), "note": note})
     sens = pd.DataFrame(sens)
 
@@ -85,18 +111,30 @@ def main():
     corr.to_csv(out / "correlations.csv")
     sens.to_csv(out / "sensitivity.csv", index=False)
     years.to_csv(out / "calendar_years.csv")
+    ct.to_csv(out / "costs.csv")
+    ctab = ct.copy()
+    for c in ctab:
+        ctab[c] = ctab[c].map(("{:.1f}x" if c.startswith("turnover") else
+                               "{:.2%}" if c.startswith("drag") else "{:.2f}").format)
     show = table.copy()
     for c, f in {"ann_ret": "{:.1%}", "ann_vol": "{:.1%}", "sharpe": "{:.2f}", "t_stat": "{:.2f}",
                  "max_dd": "{:.1%}", "hit": "{:.0%}"}.items():
         show[c] = show[c].map(lambda v: f.format(v))
     md = [f"# Backtest summary ({tag})", "",
-          f"Returns: `{source}`. Implementation lag: {lag} month(s). Gross of costs. "
+          f"Returns: `{source}`. Implementation lag: {lag} month(s). Gross of costs unless marked net. "
           "Excess returns; each stream is targeted at 10% volatility. Markets traded: "
           + ", ".join(f"{k} {v}" for k, v in n_assets.items()) + ".",
           "", show.to_markdown(),
+          "", "## Turnover and transaction costs", "",
+          "Turnover is notional traded per year as a multiple of NAV, measured on the final "
+          "vol-targeted portfolio (offsetting trades across sleeves net out). Costs are one-way, "
+          "per unit of notional: " + ", ".join(f"{k} {v:g}bp" for k, v in COST_BPS.items())
+          + " (1x), an assumption for futures and forwards; see README. Sharpe ratios net of "
+          "0x to 4x those costs; vol not re-targeted after costs.",
+          "", ctab.to_markdown(),
           "", "## Sharpe ratio by sub-period", "", sub.to_markdown(),
           "", "## Calendar-year returns", "", years.map("{:.1%}".format).to_markdown(),
-          "", "## Sensitivity (Sharpe ratio, same window length)", "", sens.to_markdown(index=False),
+          "", "## Sensitivity (Sharpe ratio, same window length; net = 1x costs)", "", sens.to_markdown(index=False),
           "", "## Correlations", "", corr.round(2).to_markdown(),
           "", "## Countries with a live signal (of 10)", "", live.to_markdown(), ""]
     (out / "summary.md").write_text("\n".join(md))

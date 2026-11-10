@@ -1,7 +1,7 @@
-returns,impl_lag,months,Macro momentum,Trend following,50/50,corr MM/TF,note
-market,0,120,0.69,-0.05,0.39,0.31,
-market,1,120,0.65,-0.2,0.27,0.43,
-market,2,120,0.21,-0.02,0.11,0.37,
-fred,0,120,1.03,0.63,0.98,0.42,look-ahead: averaged prices
-fred,1,120,0.5,-0.26,0.14,0.55,
-fred,2,120,0.15,-0.25,-0.06,0.67,
+returns,impl_lag,months,Macro momentum,Trend following,50/50,Macro momentum net,Trend following net,corr MM/TF,note
+market,0,120,0.69,-0.05,0.39,0.57,-0.13,0.31,
+market,1,120,0.65,-0.2,0.27,0.52,-0.28,0.43,
+market,2,120,0.21,-0.02,0.11,0.09,-0.09,0.37,
+fred,0,120,1.03,0.63,0.98,0.87,0.55,0.42,look-ahead: averaged prices
+fred,1,120,0.5,-0.26,0.14,0.36,-0.33,0.55,
+fred,2,120,0.15,-0.25,-0.06,0.03,-0.31,0.67,
