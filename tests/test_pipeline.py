@@ -12,12 +12,14 @@ from mm.synth import make_panel  # noqa: E402
 
 
 def test_runs_and_hits_vol_target():
-    mm, tf = macro_momentum(make_panel()), trend_following(make_panel())
-    assert mm["sleeves"].shape[1] == 3 * 4 * 2
-    for x in (mm["total"], tf["total"]):
-        x = x.dropna()
-        assert len(x) > 120
-        assert 0.06 < x.std() * np.sqrt(12) < 0.15
+    for source in ("market", "fred"):
+        mm = macro_momentum(make_panel(), source=source)
+        tf = trend_following(make_panel(), source=source)
+        assert mm["sleeves"].shape[1] == 3 * 4 * 2
+        for x in (mm["total"], tf["total"]):
+            x = x.dropna()
+            assert len(x) > 120
+            assert 0.06 < x.std() * np.sqrt(12) < 0.15
 
 
 def test_no_look_ahead():
@@ -30,8 +32,9 @@ def test_no_look_ahead():
         late = v.index > cut
         v.loc[late] = v.loc[late] * (1 + rng.normal(0, 0.2, v.loc[late].shape))
     for fn in (macro_momentum, trend_following):
-        a, b = fn(base), fn(other)
-        pd.testing.assert_series_equal(a["total"].loc[:cut], b["total"].loc[:cut])
+        for lag in (0, 1):
+            a, b = fn(base, impl_lag=lag), fn(other, impl_lag=lag)
+            pd.testing.assert_series_equal(a["total"].loc[:cut], b["total"].loc[:cut])
     pd.testing.assert_frame_equal(macro_momentum(base)["sleeves"].loc[:cut],
                                   macro_momentum(other)["sleeves"].loc[:cut])
 
@@ -49,3 +52,13 @@ def test_par_bond_return():
     assert abs(r[0] - 0.05 / 12) < 1e-12          # unchanged yield: carry only
     assert -0.075 < r[1] - 0.05 / 12 < -0.070     # +100bp on a 10y at 5%: about -7.4%
     assert abs(r[2]) < 1e-12                      # zero yields handled
+
+
+def test_unit_fix_and_month_end():
+    from mm.fetch_market import fix_units, month_end
+    idx = pd.bdate_range("2024-01-01", "2024-03-15")
+    s = pd.Series(10.0, index=idx)
+    s.loc["2024-02-01":] *= 100          # ticker flips from pounds to pence
+    assert np.allclose(fix_units(s), 10.0)
+    m = month_end(s)
+    assert list(m.index.strftime("%Y-%m")) == ["2024-01", "2024-02"]   # March unfinished

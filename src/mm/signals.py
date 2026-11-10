@@ -6,7 +6,7 @@ from .universe import BASE
 # Months between the reference period and when the number is public.
 PUB_LAG = {"growth": 3, "inflation": 2, "trade": 1, "monetary": 0, "risk": 0}
 
-STALE = 2
+STALE = 3
 
 # Theme -> variables. Business cycle is the average of growth and inflation.
 THEMES = {"business_cycle": ["growth", "inflation"], "trade": ["trade"],

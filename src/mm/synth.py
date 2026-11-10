@@ -18,6 +18,8 @@ def make_panel(start="2005-01-31", months=262, seed=0) -> dict:
     gdp = walk(0.6, 2.0)
     gdp.loc[~np.isin(idx.month, [3, 6, 9, 12])] = np.nan   # quarterly, carried forward
     gdp = gdp.ffill(limit=5)
-    return {"eq": 100 * np.exp(walk(0.045)), "y10": walk(0.18, 3.0), "r3m": walk(0.10, 2.0),
+    bond_px = 100 * np.exp(walk(0.018))[["US", "DE", "JP", "GB", "CA", "AU", "CH"]]
+    return {"px_eq": 100 * np.exp(walk(0.045)), "px_bond": bond_px,
+            "eq": 100 * np.exp(walk(0.045)), "y10": walk(0.18, 3.0), "r3m": walk(0.10, 2.0),
             "fx": np.exp(walk(0.028)).drop(columns=BASE), "neer": 100 * np.exp(walk(0.015)),
             "cpi_yoy": walk(0.25, 2.0), "gdp_yoy": gdp}

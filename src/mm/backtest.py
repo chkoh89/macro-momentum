@@ -17,15 +17,16 @@ def _avg(streams, scale=True, min_share=0.75):
     return pf.target_vol(x) if scale else x
 
 
-def macro_momentum(panel: dict, impl_lag: int = 1) -> dict:
+def macro_momentum(panel: dict, impl_lag: int = 0, source: str | None = None) -> dict:
     """Returns {"sleeves": DataFrame of (asset, theme, style) portfolios at 10%
     vol, "by_theme", "by_asset", "total"}.
 
-    impl_lag: extra months between observing a signal and trading on it.
-    Default 1 because the free price data are monthly averages: a signal built
-    from average-of-month prices must not trade the same month's average.
+    impl_lag: extra months between observing a signal and trading on it. 0 is
+    right for month-end tradeable prices (trade at the close the signal is
+    measured on). Use at least 1 with source="fred": those prices are monthly
+    averages, and a signal built from an average must not trade that average.
     """
-    rets = asset_returns(panel)
+    rets = asset_returns(panel, source)
     trends = macro_trends(panel, rets["eq"])
     # Directional risk-sentiment signals are measured against their expanding
     # mean, since one-year equity returns are positive on average.
@@ -50,10 +51,10 @@ def macro_momentum(panel: dict, impl_lag: int = 1) -> dict:
             "total": _avg([s[c] for c in s.columns]), "asset_returns": rets}
 
 
-def trend_following(panel: dict, impl_lag: int = 1) -> dict:
+def trend_following(panel: dict, impl_lag: int = 0, source: str | None = None) -> dict:
     """Time-series momentum on the same markets: equal blend of the sign of the
     1-, 3- and 12-month excess return, equal-volatility sizing."""
-    rets = asset_returns(panel)
+    rets = asset_returns(panel, source)
     out = {}
     for a in ASSETS:
         r = rets[a]
