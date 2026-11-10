@@ -10,8 +10,10 @@ ASSETS = ["eq", "bond", "fx"]
 STYLES = {"xs": pf.xs_weights, "ts": pf.ts_weights}
 
 
-def _avg(streams, scale=True):
-    x = pd.concat(streams, axis=1).mean(axis=1, skipna=False)
+def _avg(streams, scale=True, min_share=0.75):
+    """Equal-weight the streams that are live; blank if fewer than min_share are."""
+    df = pd.concat(streams, axis=1)
+    x = df.mean(axis=1).where(df.notna().mean(axis=1) >= min_share)
     return pf.target_vol(x) if scale else x
 
 
@@ -39,7 +41,7 @@ def macro_momentum(panel: dict, impl_lag: int = 1) -> dict:
                     sig = asset_signal(src[v], a, v).shift(impl_lag)
                     sig = sig.reindex(columns=rets[a].columns)
                     parts.append(pf.target_vol(pf.pnl(wfun(sig, vol), rets[a])))
-                sleeves[(a, theme, style)] = parts[0] if len(parts) == 1 else _avg(parts)
+                sleeves[(a, theme, style)] = parts[0] if len(parts) == 1 else _avg(parts, min_share=0.5)
     s = pd.DataFrame(sleeves)
     s.columns.names = ["asset", "theme", "style"]
     by_theme = pd.DataFrame({t: _avg([s[c] for c in s.columns if c[1] == t]) for t in THEMES})

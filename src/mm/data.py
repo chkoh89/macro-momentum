@@ -31,10 +31,13 @@ def asset_returns(p: Panel) -> dict:
     bond  10y par bond repriced off the yield change, minus cash
     fx    long local currency vs USD: spot return plus the 3m rate differential
     """
-    cash = p["r3m"].shift(1) / 1200
-    eq = p["eq"].pct_change(fill_method=None) - cash
+    # Gaps and stale ends in the 3m rate are carried forward for the cash leg.
+    cash = p["r3m"].ffill().reindex(p["eq"].index.union(p["fx"].index)).ffill().shift(1) / 1200
+    eq = p["eq"].pct_change(fill_method=None)
+    eq = eq - cash.reindex(eq.index)
     y = p["y10"] / 100
-    bond = _par_bond_return(y.shift(1), y).where(y.notna() & y.shift(1).notna()) - cash
+    bond = _par_bond_return(y.shift(1), y).where(y.notna() & y.shift(1).notna())
+    bond = bond - cash.reindex(bond.index)
     fx = p["fx"].pct_change(fill_method=None)
-    fx = fx + cash[fx.columns].sub(cash[BASE], axis=0)
+    fx = fx + cash[fx.columns].sub(cash[BASE], axis=0).reindex(fx.index)
     return {"eq": eq, "bond": bond, "fx": fx}

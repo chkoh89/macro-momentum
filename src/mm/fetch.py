@@ -42,8 +42,9 @@ def to_monthly(s: pd.Series, freq: str, transform):
         s = 1.0 / s
     if transform == "yoy":
         s = 100 * (s / s.shift({"M": 12, "Q": 4}[freq]) - 1)
-    if freq == "D":
-        return s.resample("ME").last().dropna()
+    if freq == "D":   # month-end value; an unfinished current month is dropped
+        m = s.resample("ME").last().dropna()
+        return m[m.index <= s.index[-1] + pd.offsets.BDay(1)]
     if freq == "M":
         s.index = s.index + pd.offsets.MonthEnd(0)
         return s.dropna()
@@ -57,7 +58,7 @@ def build(start: str, out: pathlib.Path):
     rows, cov = [], []
     for field in FIELDS:
         for c in COUNTRIES:
-            used = None
+            best, tried = None, []
             for sid, freq, tr in candidates(field, c):
                 s = fred(sid, start)
                 if s is None:
@@ -66,14 +67,19 @@ def build(start: str, out: pathlib.Path):
                 m = to_monthly(s, freq, tr)
                 if m.empty:
                     continue
+                tried.append(f"{sid}:{m.index[-1]:%Y-%m}")
+                if best is None or m.index[-1] > best[1].index[-1]:
+                    best = (sid, m)
+            if best:
+                sid, m = best
                 rows.append(pd.DataFrame({"date": m.index, "field": field,
                                           "country": c, "value": m.to_numpy()}))
-                used = (sid, m.index[0].date(), m.index[-1].date(), len(m))
-                break
-            if candidates(field, c):
-                cov.append([field, c, *(used or ("MISSING", "", "", 0))])
+                cov.append([field, c, sid, m.index[0].date(), m.index[-1].date(), len(m),
+                            " ".join(tried)])
+            elif candidates(field, c):
+                cov.append([field, c, "MISSING", "", "", 0, ""])
     pd.concat(rows).to_csv(out / "panel.csv", index=False)
-    cov = pd.DataFrame(cov, columns=["field", "country", "fred_id", "first", "last", "n"])
+    cov = pd.DataFrame(cov, columns=["field", "country", "fred_id", "first", "last", "n", "found"])
     cov.to_csv(out / "coverage.csv", index=False)
     return cov
 
@@ -84,5 +90,5 @@ if __name__ == "__main__":
     ap.add_argument("--out", default="data")
     a = ap.parse_args()
     cov = build(a.start, pathlib.Path(a.out))
-    print(cov.to_string(index=False))
+    print(cov.drop(columns="found").to_string(index=False))
     print(f"\nmissing: {(cov.fred_id == 'MISSING').sum()} of {len(cov)}")

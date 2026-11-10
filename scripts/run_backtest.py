@@ -12,6 +12,7 @@ import pandas as pd
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 from mm.backtest import macro_momentum, stats, trend_following  # noqa: E402
 from mm.data import load_panel  # noqa: E402
+from mm.signals import macro_trends  # noqa: E402
 
 
 def main():
@@ -52,9 +53,19 @@ def main():
     show = table.copy()
     for c, f in fmt.items():
         show[c] = show[c].map(lambda v: f.format(v))
+    main3 = ["Macro momentum", "Trend following", "50/50"]
+    halves = {"2021 and earlier": df.loc[:"2021-12"], "2022 onward": df.loc["2022-01":]}
+    sub = pd.DataFrame({k: {m: stats(v[m]).get("sharpe", float("nan")) for m in main3}
+                        for k, v in halves.items()}).round(2)
+    trends = macro_trends(panel, mm["asset_returns"]["eq"])
+    live = pd.DataFrame({k: v.reindex(df.index).notna().sum(axis=1).iloc[[0, len(df) // 2, -1]]
+                         for k, v in trends.items()})
+    live.index = live.index.strftime("%Y-%m")
     md = [f"# Backtest summary ({tag})", "",
           f"Implementation lag: {a.impl_lag} month(s). Gross of costs. Excess returns, each stream targeted at 10% volatility.",
-          "", show.to_markdown(), "", "## Correlations", "", corr.round(2).to_markdown(), ""]
+          "", show.to_markdown(), "", "## Sharpe ratio by sub-period", "", sub.to_markdown(),
+          "", "## Correlations", "", corr.round(2).to_markdown(),
+          "", "## Countries with a live signal (of 10)", "", live.to_markdown(), ""]
     (out / "summary.md").write_text("\n".join(md))
     print("\n".join(md))
 

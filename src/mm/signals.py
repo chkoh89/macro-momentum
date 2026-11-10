@@ -4,7 +4,9 @@ import pandas as pd
 from .universe import BASE
 
 # Months between the reference period and when the number is public.
-PUB_LAG = {"growth": 3, "inflation": 2, "trade": 0, "monetary": 0, "risk": 0}
+PUB_LAG = {"growth": 3, "inflation": 2, "trade": 1, "monetary": 0, "risk": 0}
+
+STALE = 2
 
 # Theme -> variables. Business cycle is the average of growth and inflation.
 THEMES = {"business_cycle": ["growth", "inflation"], "trade": ["trade"],
@@ -35,7 +37,9 @@ def macro_trends(p: dict, eq_excess: pd.DataFrame) -> dict:
         "monetary": p["r3m"].diff(12),
         "risk": eq_excess.rolling(12, min_periods=12).sum(),
     }
-    return {k: v.shift(PUB_LAG[k]) for k, v in t.items()}
+    # If this month's figure is not out yet, keep the last known one for up to
+    # STALE months; after that the country drops out of that signal.
+    return {k: v.shift(PUB_LAG[k]).ffill(limit=STALE) for k, v in t.items()}
 
 
 def asset_signal(trend: pd.DataFrame, asset: str, var: str) -> pd.DataFrame:

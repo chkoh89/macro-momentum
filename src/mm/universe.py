@@ -1,6 +1,8 @@
 """Universe and data map. Every series is a free FRED id (no API key needed).
 
-Each field has a list of candidate ids per country, tried in order. A candidate
+Each field has a list of candidate ids per country. The fetch downloads every
+candidate that exists and keeps the one with the most recent data (ties go to
+the earlier entry). A candidate
 is (fred_id, freq, transform):
   freq       D = daily (month-end last), M = monthly, Q = quarterly
   transform  None, "inv" (take 1/x) or "yoy" (level -> year-on-year % change)
@@ -25,6 +27,11 @@ _GDP_EXTRA = {"US": ["GDPC1"], "JP": ["JPNRGDPEXP"], "DE": ["CLVMNACSCAB1GQDE"],
               "SE": ["CLVMNACSCAB1GQSE"], "NO": ["CLVMNACSCAB1GQNO"]}
 
 
+_HICP = {"DE": "DE", "GB": "UK", "CH": "CH", "SE": "SE", "NO": "NO"}
+_CPI_EXTRA = {"US": ["CPIAUCSL", "CPIAUCNS"], "JP": ["JPNCPIALLMINMEI", "JPNCPICORMINMEI"],
+              "CA": ["CANCPIALLMINMEI", "CPALCY01CAM661N"], "GB": ["GBRCPIALLMINMEI"]}
+
+
 def candidates(field: str, c: str):
     """Ordered FRED candidates for one (field, country)."""
     iso3 = _ISO3[c]
@@ -36,7 +43,7 @@ def candidates(field: str, c: str):
         out = [(f"IR3TIB01{c}M156N", "M", None)]
         if c == "DE":
             out.append(("IR3TIB01EZM156N", "M", None))
-        return out + [(f"IRSTCI01{c}M156N", "M", None)]
+        return out + [(f"IRSTCI01{c}M156N", "M", None), (f"IR3TCD01{c}M156N", "M", None)]
     if field == "fx":      # USD per local currency, month-end
         if c == BASE:
             return []
@@ -46,10 +53,17 @@ def candidates(field: str, c: str):
         code = "XM" if c == "DE" else c
         return [(f"NB{code}BIS", "M", None), (f"RB{code}BIS", "M", None)]
     if field == "cpi_yoy":  # CPI, % change on a year earlier
-        return [(f"CPALTT01{c}M659N", "M", None), (f"CPALTT01{c}Q659N", "Q", None),
-                (f"{iso3}CPIALLMINMEI", "M", "yoy"), (f"{iso3}CPIALLQINMEI", "Q", "yoy")]
+        out = [(f"CPALTT01{c}M659N", "M", None), (f"CPALTT01{c}Q659N", "Q", None),
+               (f"{iso3}CPIALLMINMEI", "M", "yoy"), (f"{iso3}CPIALLQINMEI", "Q", "yoy"),
+               (f"CPALTT01{c}M661N", "M", "yoy"), (f"CPALTT01{c}Q661N", "Q", "yoy"),
+               (f"CPALCY01{c}M661N", "M", "yoy"), (f"CPGRLE01{c}M659N", "M", None)]
+        if c in _HICP:   # Eurostat harmonised index
+            out.append((f"CP0000{_HICP[c]}M086NEST", "M", "yoy"))
+        return out + [(i, "M", "yoy") for i in _CPI_EXTRA.get(c, [])]
     if field == "gdp_yoy":  # real GDP, % change on a year earlier
-        ids = _GDP_EXTRA.get(c, []) + [f"NGDPRSAXDC{c}Q", f"NAEXKP01{c}Q661S"]
+        ids = _GDP_EXTRA.get(c, []) + [f"NGDPRSAXDC{c}Q", f"NAEXKP01{c}Q661S",
+                                       f"NAEXKP01{c}Q189S", f"NAEXKP01{c}Q652S",
+                                       f"{iso3}GDPRQPSMEI", f"RGDPNA{c}Q"]
         return [(i, "Q", "yoy") for i in ids]
     raise KeyError(field)
 
